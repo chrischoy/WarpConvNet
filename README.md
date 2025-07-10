@@ -37,7 +37,10 @@ pip install flash-attn --no-build-isolation
 pip install warpconvnet
 
 # Or install from source
-pip install git+https://github.com/NVlabs/warpconvnet.git
+git clone https://github.com/NVlabs/WarpConvNet.git
+cd WarpConvNet
+git submodule update --init 3rdparty/cutlass
+pip install .
 ```
 
 Available optional dependency groups:
@@ -109,7 +112,7 @@ Build and run with GPU support:
 
 ```bash
 # Build container
-cd warpconvnet/docker
+cd docker
 docker build -t warpconvnet .
 
 # Run container
