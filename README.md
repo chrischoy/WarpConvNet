@@ -13,6 +13,11 @@ WarpConvNet is a high-performance library for 3D deep learning, built on NVIDIA'
 
 Recommend using [`uv`](https://docs.astral.sh/uv/) to install the dependencies.
 
+WarpConvNet previously relied on the `warp_lang` toolkit for many GPU kernels,
+but these kernels are now included in the wheel. You no longer need to install
+`warp_lang` manually; simply install `warpconvnet` and its optional CUDA
+dependencies as shown below.
+
 ```bash
 # Install PyTorch first (specify your CUDA version)
 export CUDA=cu128  # For CUDA 12.8
@@ -46,33 +51,38 @@ Available optional dependency groups:
 
 ```
 ./
-├── docker/             # Docker build files
+├── 3rdparty/            # Third-party dependencies
+│   └── cutlass/         # CUDA kernels
+├── docker/              # Docker build files
 │   ├── build.sh
 │   └── Dockerfile
-├── examples/           # Example applications
-│   ├── mnist.py
-│   └── modelnet.py
-├── scripts/            # Development utilities
+├── docs/                # Documentation sources
+├── examples/            # Example applications
+├── scripts/             # Development utilities
 │   ├── build_docs.py
 │   ├── dir_struct.sh
 │   └── serve_docs.py
-├── tests/              # Test suite
-│   ├── base/           # Core functionality tests
-│   ├── coords/         # Coordinate operation tests
-│   ├── features/       # Feature processing tests
-│   ├── nn/             # Neural network tests
-│   └── types/          # Geometry type tests
-└── warpconvnet/        # Main package
-    ├── geometry/       # Geometric operations
-    │   ├── base/       # Core definitions
-    │   ├── coords/     # Coordinate operations
-    │   ├── features/   # Feature operations
-    │   └── types/      # Geometry types
-    ├── nn/             # Neural networks
-    │   ├── functional/ # Neural network functions
-    │   └── modules/    # Neural network modules
-    ├── ops/            # Basic operations
-    └── utils/          # Utility functions
+├── tests/               # Test suite
+│   ├── base/            # Core functionality tests
+│   ├── coords/          # Coordinate operation tests
+│   ├── features/        # Feature processing tests
+│   ├── nn/              # Neural network tests
+│   ├── csrc/            # C++/CUDA test utilities
+│   └── types/           # Geometry type tests
+└── warpconvnet/         # Main package
+    ├── csrc/            # C++/CUDA extensions
+    ├── dataset/         # Dataset utilities
+    ├── geometry/        # Geometric operations
+    │   ├── base/        # Core definitions
+    │   ├── coords/      # Coordinate operations
+    │   ├── features/    # Feature operations
+    │   └── types/       # Geometry types
+    ├── models/          # Sample models
+    ├── nn/              # Neural networks
+    │   ├── functional/  # Neural network functions
+    │   └── modules/     # Neural network modules
+    ├── ops/             # Basic operations
+    └── utils/           # Utility functions
 ```
 
 For complete directory structure, run `bash scripts/dir_struct.sh`.
