@@ -148,4 +148,78 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('load', function() {
     console.log('🌐 Window loaded - final mermaid check');
     setTimeout(processAndRenderMermaid, 200);
+});
+
+// Additional ReadTheDocs specific handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Override ReadTheDocs navigation if possible (only for page navigation, not scroll)
+    if (typeof window.history !== 'undefined' && window.history.pushState) {
+        const originalPushState = window.history.pushState;
+        window.history.pushState = function(state, title, url) {
+            const currentPath = window.location.pathname;
+            const newPath = url ? new URL(url, window.location.origin).pathname : null;
+            
+            // Only process if it's a different page (not just anchor change)
+            if (newPath && newPath !== currentPath) {
+                console.log('📜 History pushState detected - page navigation to:', newPath);
+                originalPushState.apply(this, arguments);
+                setTimeout(processAndRenderMermaid, 300);
+            } else {
+                // Just anchor change or scroll - don't process mermaid
+                originalPushState.apply(this, arguments);
+            }
+        };
+        
+        const originalReplaceState = window.history.replaceState;
+        window.history.replaceState = function(state, title, url) {
+            const currentPath = window.location.pathname;
+            const newPath = url ? new URL(url, window.location.origin).pathname : null;
+            
+            // Only process if it's a different page (not just anchor change)
+            if (newPath && newPath !== currentPath) {
+                console.log('📜 History replaceState detected - page navigation to:', newPath);
+                originalReplaceState.apply(this, arguments);
+                setTimeout(processAndRenderMermaid, 300);
+            } else {
+                // Just anchor change or scroll - don't process mermaid
+                originalReplaceState.apply(this, arguments);
+            }
+        };
+    }
+    
+    // Listen for popstate events (back/forward navigation) - only for page changes
+    let lastPath = window.location.pathname;
+    window.addEventListener('popstate', function() {
+        const currentPath = window.location.pathname;
+        if (currentPath !== lastPath) {
+            console.log('📜 Popstate event detected - page navigation to:', currentPath);
+            lastPath = currentPath;
+            setTimeout(processAndRenderMermaid, 300);
+        } else {
+            console.log('📜 Popstate event detected - anchor change only, skipping mermaid');
+        }
+    });
+    
+    // Force processing every 2 seconds as a last resort
+    setInterval(function() {
+        const mermaidBlocks = document.querySelectorAll('pre code');
+        let needsProcessing = false;
+        mermaidBlocks.forEach(function(block) {
+            const content = block.textContent.trim();
+            if (content.startsWith('graph ') || content.startsWith('flowchart ') || 
+                content.startsWith('sequenceDiagram') || content.startsWith('classDiagram') ||
+                content.startsWith('stateDiagram') || content.startsWith('erDiagram') ||
+                content.startsWith('journey') || content.startsWith('gantt') ||
+                content.startsWith('pie') || content.startsWith('quadrantChart') ||
+                content.startsWith('xyChart') || content.startsWith('timeline') ||
+                content.startsWith('zenuml') || content.startsWith('sankey')) {
+                needsProcessing = true;
+            }
+        });
+        
+        if (needsProcessing) {
+            console.log('⏰ Periodic check found mermaid blocks - processing');
+            processAndRenderMermaid();
+        }
+    }, 2000);
 }); 
