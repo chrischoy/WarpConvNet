@@ -41,7 +41,7 @@ jobs:
           uv pip install pymdown-extensions
 
       - name: Build documentation
-        run: mkdocs build -f mkdocs-readthedocs.yml
+        run: mkdocs build -f docs/mkdocs-readthedocs.yml
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

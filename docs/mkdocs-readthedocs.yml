@@ -1,30 +1,12 @@
 site_name: WarpConvNet
 site_description: NVIDIA Internal Library for Sparse Convolutions
-repo_url: https://gitlab-master.nvidia.com/3dmmllm/warp
+repo_url: https://github.com/nvlabs/warpconvnet
+repo_name: nvlabs/warpconvnet
+site_author: NVIDIA
+docs_dir: .
+
 theme:
-  name: material
-  palette:
-    - scheme: default
-      primary: green
-      accent: light green
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      primary: green
-      accent: light green
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-  features:
-    - navigation.instant
-    - navigation.tracking
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
-    - search.highlight
-    - search.share
-    - content.code.copy
+  name: readthedocs
 
 plugins:
   - search
@@ -40,16 +22,15 @@ plugins:
             filters: ["!^_"]
 
 markdown_extensions:
-  - pymdownx.arithmatex:  # For LaTeX math equations
+  - pymdownx.arithmatex:
       generic: true
-  - pymdownx.highlight:   # For code highlighting
+  - pymdownx.highlight:
       anchor_linenums: true
-  - pymdownx.superfences  # For nested code blocks
-  - pymdownx.details     # For collapsible sections
-  - admonition          # For note boxes
+  - pymdownx.superfences
+  - pymdownx.details
+  - admonition
   - toc:
       permalink: true
-
 
 extra_javascript:
   - javascripts/mathjax.js
@@ -62,6 +43,7 @@ nav:
   - Getting Started:
     - Installation: getting_started/installation.md
     - Quick Start: getting_started/quickstart.md
+    - Deployment: deployment.md
   - User Guide:
     - Basic Concepts: user_guide/concepts.md
     - Geometry Types: user_guide/geometry_types.md
@@ -91,4 +73,4 @@ nav:
   - Examples:
     - ScanNet: examples/scannet.md
     - ModelNet: examples/modelnet.md
-  - Contributing: contributing.md
+  - Contributing: contributing.md 
