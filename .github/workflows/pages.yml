@@ -1,0 +1,5 @@
+# This file is used to configure GitHub Pages
+# The documentation will be served from the /docs directory
+# GitHub Actions will build and deploy the documentation automatically
+
+# No additional configuration needed - GitHub Actions handles everything 
