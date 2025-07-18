@@ -62,6 +62,9 @@ nav:
     - Quick Start: getting_started/quickstart.md
   - User Guide:
     - Basic Concepts: user_guide/concepts.md
+    - Geometry Types: user_guide/geometry_types.md
+    - Geometry Tutorial: user_guide/geometry_tutorial.md
+    - Network Tutorial: user_guide/network_tutorial.md
     - Sparse Convolutions: user_guide/sparse_convolutions.md
     - Point Convolutions: user_guide/point_convolutions.md
     - Normalizations: user_guide/normalizations.md
