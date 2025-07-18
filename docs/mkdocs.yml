@@ -2,6 +2,7 @@ site_name: WarpConvNet
 site_description: NVIDIA Internal Library for Sparse Convolutions
 repo_url: https://github.com/nvlabs/warpconvnet
 docs_dir: .
+site_dir: ../site
 theme:
   name: material
   palette:

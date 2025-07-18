@@ -4,6 +4,7 @@ repo_url: https://github.com/nvlabs/warpconvnet
 repo_name: nvlabs/warpconvnet
 site_author: NVIDIA
 docs_dir: .
+site_dir: ../site
 
 theme:
   name: readthedocs
