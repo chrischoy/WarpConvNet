@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 for (let i = 0; i < mutation.addedNodes.length; i++) {
                     const node = mutation.addedNodes[i];
                     if (node.nodeType === 1 && (node.classList.contains('md-content') || 
+                        node.classList.contains('rst-content') ||
                         node.querySelector && node.querySelector('pre code'))) {
                         shouldProcess = true;
                         break;
@@ -129,12 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (shouldProcess) {
             console.log('🔄 Content changed - reprocessing mermaid');
-            setTimeout(processAndRenderMermaid, 100);
+            // Wait a bit for content to fully load
+            setTimeout(processAndRenderMermaid, 200);
         }
     });
     
     // Start observing the main content area
-    const contentArea = document.querySelector('.md-content') || document.querySelector('main') || document.body;
+    const contentArea = document.querySelector('.md-content') || 
+                       document.querySelector('.rst-content') ||
+                       document.querySelector('main') || 
+                       document.body;
     if (contentArea) {
         observer.observe(contentArea, {
             childList: true,
@@ -163,7 +168,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (newPath && newPath !== currentPath) {
                 console.log('📜 History pushState detected - page navigation to:', newPath);
                 originalPushState.apply(this, arguments);
-                setTimeout(processAndRenderMermaid, 300);
+                // Wait longer for content to load, then process
+                setTimeout(processAndRenderMermaid, 800);
             } else {
                 // Just anchor change or scroll - don't process mermaid
                 originalPushState.apply(this, arguments);
@@ -179,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (newPath && newPath !== currentPath) {
                 console.log('📜 History replaceState detected - page navigation to:', newPath);
                 originalReplaceState.apply(this, arguments);
-                setTimeout(processAndRenderMermaid, 300);
+                // Wait longer for content to load, then process
+                setTimeout(processAndRenderMermaid, 800);
             } else {
                 // Just anchor change or scroll - don't process mermaid
                 originalReplaceState.apply(this, arguments);
@@ -194,14 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentPath !== lastPath) {
             console.log('📜 Popstate event detected - page navigation to:', currentPath);
             lastPath = currentPath;
-            setTimeout(processAndRenderMermaid, 300);
+            // Wait longer for content to load, then process
+            setTimeout(processAndRenderMermaid, 800);
         } else {
             console.log('📜 Popstate event detected - anchor change only, skipping mermaid');
         }
     });
     
-    // Force processing every 2 seconds as a last resort
-    setInterval(function() {
+    // Fallback: check for unprocessed mermaid blocks after navigation
+    function checkForUnprocessedMermaid() {
         const mermaidBlocks = document.querySelectorAll('pre code');
         let needsProcessing = false;
         mermaidBlocks.forEach(function(block) {
@@ -218,8 +226,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if (needsProcessing) {
-            console.log('⏰ Periodic check found mermaid blocks - processing');
+            console.log('🔍 Fallback check found unprocessed mermaid blocks - processing');
             processAndRenderMermaid();
         }
-    }, 2000);
+    }
+    
+    // Check for unprocessed blocks after navigation events
+    let navigationTimeout;
+    function scheduleMermaidCheck() {
+        if (navigationTimeout) {
+            clearTimeout(navigationTimeout);
+        }
+        navigationTimeout = setTimeout(checkForUnprocessedMermaid, 1000);
+    }
+    
+    // Listen for navigation events to schedule checks
+    window.addEventListener('popstate', scheduleMermaidCheck);
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' && e.target.href) {
+            scheduleMermaidCheck();
+        }
+    });
 }); 
