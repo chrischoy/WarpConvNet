@@ -1,6 +1,8 @@
 // Initialize Mermaid diagrams
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Mermaid init script loaded!');
+let mermaidInitialized = false;
+
+function initializeMermaid() {
+    console.log('🚀 Initializing Mermaid...');
     console.log('🔍 Checking if mermaid is available:', typeof mermaid !== 'undefined');
     
     if (typeof mermaid === 'undefined') {
@@ -8,24 +10,31 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    console.log('⚙️ Configuring mermaid...');
-    // Configure mermaid
-    mermaid.initialize({
-        theme: 'default',
-        themeVariables: {
-            primaryColor: '#4CAF50',
-            primaryTextColor: '#fff',
-            primaryBorderColor: '#4CAF50',
-            lineColor: '#4CAF50',
-            secondaryColor: '#f8f9fa',
-            tertiaryColor: '#fff'
-        },
-        flowchart: {
-            useMaxWidth: true,
-            htmlLabels: true
-        }
-    });
-    console.log('✅ Mermaid configured successfully');
+    if (!mermaidInitialized) {
+        console.log('⚙️ Configuring mermaid...');
+        // Configure mermaid
+        mermaid.initialize({
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#4CAF50',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#4CAF50',
+                lineColor: '#4CAF50',
+                secondaryColor: '#f8f9fa',
+                tertiaryColor: '#fff'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+        console.log('✅ Mermaid configured successfully');
+        mermaidInitialized = true;
+    }
+}
+
+function processMermaidBlocks() {
+    console.log('🔍 Processing mermaid blocks...');
     
     // Find all code blocks that contain mermaid content
     const codeBlocks = document.querySelectorAll('pre code');
@@ -60,28 +69,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     console.log('📊 Total mermaid blocks found and converted:', mermaidBlocksFound);
-    
-    if (mermaidBlocksFound > 0) {
-        console.log('🎨 Rendering mermaid diagrams...');
-        // Render all mermaid diagrams
-        try {
-            mermaid.init();
+    return mermaidBlocksFound;
+}
+
+function renderMermaidDiagrams() {
+    console.log('🎨 Rendering mermaid diagrams...');
+    try {
+        const mermaidElements = document.querySelectorAll('.mermaid');
+        console.log('🔍 Found', mermaidElements.length, 'mermaid elements to render');
+        
+        if (mermaidElements.length > 0) {
+            mermaid.init(undefined, mermaidElements);
             console.log('✅ Mermaid diagrams rendered successfully');
-        } catch (error) {
-            console.error('❌ Error rendering mermaid diagrams:', error);
+        } else {
+            console.log('⚠️ No mermaid elements found in DOM');
         }
+    } catch (error) {
+        console.error('❌ Error rendering mermaid diagrams:', error);
+        console.error('❌ Error details:', error.message, error.stack);
+    }
+}
+
+function processAndRenderMermaid() {
+    initializeMermaid();
+    const blocksFound = processMermaidBlocks();
+    
+    if (blocksFound > 0) {
+        // Use a small delay to ensure DOM is ready
+        setTimeout(renderMermaidDiagrams, 50);
     } else {
         console.log('⚠️ No mermaid blocks found to render');
     }
+}
+
+// Handle initial page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM Content Loaded - processing mermaid');
+    processAndRenderMermaid();
 });
 
-// Also handle dynamic content loading (for MkDocs live reload)
+// Handle MkDocs navigation (for single-page app behavior)
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit for any dynamic content to load
-    setTimeout(function() {
-        const mermaidDivs = document.querySelectorAll('.mermaid');
-        if (mermaidDivs.length > 0) {
-            mermaid.init();
+    // Watch for navigation changes in MkDocs
+    const observer = new MutationObserver(function(mutations) {
+        let shouldProcess = false;
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                // Check if new content was added
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    const node = mutation.addedNodes[i];
+                    if (node.nodeType === 1 && (node.classList.contains('md-content') || 
+                        node.querySelector && node.querySelector('pre code'))) {
+                        shouldProcess = true;
+                        break;
+                    }
+                }
+            }
+        });
+        
+        if (shouldProcess) {
+            console.log('🔄 Content changed - reprocessing mermaid');
+            setTimeout(processAndRenderMermaid, 100);
         }
-    }, 100);
+    });
+    
+    // Start observing the main content area
+    const contentArea = document.querySelector('.md-content') || document.querySelector('main') || document.body;
+    if (contentArea) {
+        observer.observe(contentArea, {
+            childList: true,
+            subtree: true
+        });
+        console.log('👀 Started observing content changes for mermaid processing');
+    }
+});
+
+// Fallback: also process on window load
+window.addEventListener('load', function() {
+    console.log('🌐 Window loaded - final mermaid check');
+    setTimeout(processAndRenderMermaid, 200);
 }); 

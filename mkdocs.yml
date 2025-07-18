@@ -50,10 +50,12 @@ markdown_extensions:
   - toc:
       permalink: true
 
+
 extra_javascript:
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
+  - javascripts/mermaid-init.js
 
 nav:
   - Home: index.md
@@ -68,6 +70,14 @@ nav:
     - Sparse Convolutions: user_guide/sparse_convolutions.md
     - Point Convolutions: user_guide/point_convolutions.md
     - Normalizations: user_guide/normalizations.md
+    - Diagram Generation: user_guide/diagrams.md
+  - Diagrams:
+    - Architecture: diagrams/architecture.md
+    - Class Hierarchy: diagrams/class_hierarchy.md
+    - Data Flow: diagrams/data_flow.md
+    - Geometry Types: diagrams/geometry_types.md
+    - Model Architecture: diagrams/model_architecture.md
+    - API Sequence: diagrams/api_sequence.md
   - API Reference:
     - Core: api/core.md
     - Dataset: api/dataset.md
